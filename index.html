@@ -38,6 +38,7 @@
         return gk_fileData[filename] || "";
         }
         </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -71,11 +72,23 @@ header span{font-size:22px;margin-left:30px;}
  color:#fff;
  animation:updown 1.5s infinite;
 }
-@keyframes updown{0%{transform:translate(-50%,0);}50%{transform:translate(-50%,10px);}100%{transform:translate(-50%,0);}}
+@keyframes updown {
+  0% { transform: translate(-50%, 0); }
+  50% { transform: translate(-50%, 10px); }
+  100% { transform: translate(-50%, 0); }
+}
 
 /* section intro */
-.section{padding:90px 20px;opacity:0;transform:translateY(40px);transition:all .8s;}
-.section.show{opacity:1;transform:translateY(0);}
+.section {
+  padding: 90px 20px;
+  opacity: 1; /* Start visible */
+  transform: none; /* No initial transform */
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.section.show {
+  opacity: 1;
+  transform: none;
+}
 
 /* bubble card */
 .bubble{background:#fff;border-radius:30px;padding:40px;margin:auto;max-width:400px;
@@ -178,7 +191,7 @@ function recalc() {
   let n = parseInt(numSharesInput.value) || 30;
   if (n < 30) n = 30;  // Enforce minimum 30 shares
   if (n > sharesRemaining) n = sharesRemaining;
-  numSharesInput.value = n;  // Update input to reflect valid value
+  numSharesInput.value = n;  // Update input
   const subtotal = (n * pricePerShare).toFixed(2);
   const total = (parseFloat(subtotal) + onlineBankingFee).toFixed(2);
   priceBreakdown.innerHTML = `<p>Price per share: RM${pricePerShare.toFixed(2)}</p><p>Subtotal: RM${subtotal}</p><p>Online Banking Fee: RM${onlineBankingFee.toFixed(2)}</p><p><strong>Total Payable: RM${total}</strong></p>`;
@@ -187,14 +200,24 @@ function recalc() {
 numSharesInput.addEventListener('input', recalc);
 
 // Fetch remaining shares on load
+console.log('Attempting to fetch remaining shares from:', webAppUrl);
 fetch(`${webAppUrl}?action=getRemaining`)
-  .then(res => res.json())
+  .then(res => {
+    console.log('Fetch response status:', res.status);
+    return res.json();
+  })
   .then(data => {
+    console.log('Fetch data:', data);
     sharesRemaining = data.remaining;
     remainingSpan.textContent = data.remaining.toLocaleString();
     recalc();
   })
-  .catch(err => console.error('Error fetching remaining shares:', err));
+  .catch(err => {
+    console.error('Error fetching remaining shares:', err);
+    sharesRemaining = 1000000; // Fallback
+    remainingSpan.textContent = sharesRemaining.toLocaleString();
+    recalc();
+  });
 
 // Handle Buy Now
 buyBtn.addEventListener('click', () => {
@@ -206,41 +229,55 @@ buyBtn.addEventListener('click', () => {
     return;
   }
   buyBtn.disabled = true;
+  console.log('Sending purchase request:', { name, email, shares });
   fetch(webAppUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'createBill', name, email, shares })
   })
-    .then(res => res.json())
+    .then(res => {
+      console.log('Purchase response status:', res.status);
+      return res.json();
+    })
     .then(data => {
+      console.log('Purchase response data:', data);
       window.location.href = data.paymentUrl;
     })
     .catch(err => {
+      console.error('Error initiating payment:', err);
       alert('Error initiating payment. Try again.');
       buyBtn.disabled = false;
     });
 });
 
 const secs = document.querySelectorAll('.section');
-window.addEventListener('scroll', () => {
+function checkScroll() {
   secs.forEach(s => {
     const rect = s.getBoundingClientRect();
-    if (rect.top < window.innerHeight * 0.85) {
+    if (rect.top <= window.innerHeight && rect.bottom >= 0) {
       s.classList.add('show');
+      console.log('Section shown:', s);
     }
   });
+}
+window.addEventListener('scroll', checkScroll);
+window.addEventListener('load', () => {
+  console.log('Page loaded, checking sections');
+  checkScroll();
 });
 
 // Handle return from payment
 if (window.location.search.includes('payment=success')) {
   alert('Payment processed! Check your email for confirmation.');
+  console.log('Fetching remaining shares after payment');
   fetch(`${webAppUrl}?action=getRemaining`)
     .then(res => res.json())
     .then(data => {
       sharesRemaining = data.remaining;
       remainingSpan.textContent = data.remaining.toLocaleString();
       recalc();
-    });
+    })
+    .catch(err => console.error('Error fetching shares post-payment:', err));
 }
 </script>
 </body>
