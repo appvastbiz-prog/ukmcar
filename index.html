@@ -1,0 +1,247 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>RideX Share Reservation</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body,html{height:100%;font-family:'Inter',sans-serif;overflow-x:hidden;}
+video.bgvid{position:fixed;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:-2;}
+body::before{content:"";position:fixed;top:0;left:0;width:100%;height:100%;background:#450000aa;z-index:-1;}
+
+header{position:fixed;top:0;left:0;width:100%;padding:20px;color:#fff;font-weight:700;z-index:10;}
+header span{font-size:22px;margin-left:30px;}
+
+.hero{height:100vh;display:flex;justify-content:center;align-items:center;text-align:center;position:relative;}
+.heroBox{background:#ffffffc2;padding:50px 40px;border-radius:20px;max-width:700px;margin:auto;}
+.heroBox h1{font-size:48px;color:#c8102e;margin-bottom:20px;}
+.heroBox p{font-size:20px;color:#333;margin-bottom:15px;}
+
+/* scroll arrow */
+.scrollHint{
+ position:absolute;
+ bottom:25px;
+ left:50%;
+ transform:translateX(-50%);
+ font-size:30px;
+ color:#fff;
+ animation:updown 1.5s infinite;
+}
+@keyframes updown{0%{transform:translate(-50%,0);}50%{transform:translate(-50%,10px);}100%{transform:translate(-50%,0);}}
+
+/* section intro */
+.section{padding:90px 20px;opacity:0;transform:translateY(40px);transition:all .8s;}
+.section.show{opacity:1;transform:translateY(0);}
+
+/* bubble card */
+.bubble{background:#fff;border-radius:30px;padding:40px;margin:auto;max-width:400px;
+box-shadow:0 20px 45px rgba(0,0,0,0.35);position:relative;}
+.bubble h2{color:#c8102e;text-align:center;margin-bottom:20px;}
+.bubble input{width:100%;border:1px solid #c8102e;margin-bottom:20px;border-radius:10px;padding:12px;}
+.bubble button{width:100%;padding:14px;background:#c8102e;color:#fff;border-radius:12px;font-size:1.1em;border:none;cursor:pointer;transition:.3s;}
+.bubble button:hover:not(:disabled){background:#a10b24;}
+.bubble button:disabled{background:#888;cursor:not-allowed;}
+#remainingShares{color:#c8102e;font-weight:700;}
+
+.footer{color:#fff;margin:100px 0 40px;text-align:center;}
+.footer a{margin:0 10px;color:#fff;text-decoration:none;font-weight:300;}
+</style>
+</head>
+<body>
+
+<video autoplay muted loop class="bgvid"><source src="video.mp4" type="video/mp4"></video>
+
+<header><span>UKMCAR</span></header>
+
+<section class="hero">
+  <div class="heroBox">
+    <h1>RideX</h1>
+    <p>The future of true ride-sharing.</p>
+    <p>Own a part of the app and get profits daily based on your shares.</p>
+    <p>Fast, reliable, and student-prioritized rides in Malaysia, initialising in Kuala Lumpur & Selangor.</p>
+    <p>Buy a minimum of 30 shares to get free rides for life!</p>
+  </div>
+  <div class="scrollHint">⬇</div>
+</section>
+
+<section class="section">
+  <div class="bubble">
+    <h2>Reserve Your Shares Now</h2>
+    <p style="text-align:center;margin-bottom:20px;">
+      Remaining Shares: <span id="remainingShares">1,000,000</span>
+    </p>
+
+    <label>Full Name</label>
+    <input type="text" id="nameInput" placeholder="Enter your full name">
+
+    <label>Email</label>
+    <input type="email" id="emailInput" placeholder="Enter your email">
+
+    <label>Number of Shares</label>
+    <input type="number" id="numShares" min="30" value="30">
+
+    <div id="priceBreakdown" style="font-size:14px;margin-bottom:20px;">
+      <p>Price per share: RM1.50</p>
+      <p>Subtotal: RM45.00</p>
+      <p>Online Banking Fee: RM1.00</p>
+      <p><strong>Total Payable: RM46.00</strong></p>
+    </div>
+
+    <div style="font-size:13px;margin-bottom:15px;">
+      <input type="checkbox" id="agreeCheck"> I agree to <a href="agreement.pdf" target="_blank">Agreement</a>, <a href="foolproof.pdf" target="_blank">Foolproof Plan</a>, <a href="budget.pdf" target="_blank">Budget Plan</a>
+    </div>
+    <button id="buyBtn" disabled>Buy Now</button>
+  </div>
+</section>
+
+<div class="footer">
+  <p>GOOD SERVICES</p>
+  <a href="#">Forum</a>
+  <a href="#">Telegram</a>
+  <a href="#">Discord</a>
+  <a href="#">Twitter</a>
+  <a href="#">Instagram</a>
+</div>
+
+<script>
+const pricePerShare = 1.50;
+const onlineBankingFee = 1.00;
+let sharesRemaining = 1000000;  // Initial fallback
+const numSharesInput = document.getElementById('numShares');
+const priceBreakdown = document.getElementById('priceBreakdown');
+const remainingSpan = document.getElementById('remainingShares');
+const buyBtn = document.getElementById('buyBtn');
+const agreeCheck = document.getElementById('agreeCheck');
+const nameInput = document.getElementById('nameInput');
+const emailInput = document.getElementById('emailInput');
+const webAppUrl = 'YOUR_WEB_APP_URL';  // Replace with your deployed Apps Script URL
+
+agreeCheck.addEventListener('change', e => { buyBtn.disabled = !e.target.checked; });
+
+function animateShares(oldVal, newVal) {
+  let cur = oldVal, step = oldVal > newVal ? -1 : 1;
+  const timer = setInterval(() => {
+    if ((step === -1 && cur <= newVal) || (step === 1 && cur >= newVal)) {
+      clearInterval(timer);
+      cur = newVal;
+    }
+    remainingSpan.textContent = cur.toLocaleString();
+    cur += step;
+  }, 1);
+}
+
+function recalc() {
+  let n = parseInt(numSharesInput.value) || 30;
+  if (n < 30) n = 30;  // Enforce minimum 30 shares
+  if (n > sharesRemaining) n = sharesRemaining;
+  numSharesInput.value = n;  // Update input to reflect valid value
+  const subtotal = (n * pricePerShare).toFixed(2);
+  const total = (parseFloat(subtotal) + onlineBankingFee).toFixed(2);
+  priceBreakdown.innerHTML = `<p>Price per share: RM${pricePerShare.toFixed(2)}</p><p>Subtotal: RM${subtotal}</p><p>Online Banking Fee: RM${onlineBankingFee.toFixed(2)}</p><p><strong>Total Payable: RM${total}</strong></p>`;
+}
+
+numSharesInput.addEventListener('input', recalc);
+
+// Fetch remaining shares on load
+fetch(`${webAppUrl}?action=getRemaining`)
+  .then(res => res.json())
+  .then(data => {
+    sharesRemaining = data.remaining;
+    remainingSpan.textContent = data.remaining.toLocaleString();
+    recalc();
+  })
+  .catch(err => console.error('Error fetching remaining shares:', err));
+
+// Handle Buy Now
+buyBtn.addEventListener('click', () => {
+  const name = nameInput.value.trim();
+  const email = emailInput.value.trim();
+  const shares = parseInt(numSharesInput.value);
+  if (!name || !email || !shares || shares < 30 || !agreeCheck.checked) {
+    alert('Please fill all fields, agree to terms, and ensure at least 30 shares.');
+    return;
+  }
+  buyBtn.disabled = true;
+  fetch(webAppUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'createBill', name, email, shares })
+  })
+    .then(res => res.json())
+    .then(data => {
+      window.location.href = data.paymentUrl;
+    })
+    .catch(err => {
+      alert('Error initiating payment. Try again.');
+      buyBtn.disabled = false;
+    });
+});
+
+const secs = document.querySelectorAll('.section');
+window.addEventListener('scroll', () => {
+  secs.forEach(s => {
+    const rect = s.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.85) {
+      s.classList.add('show');
+    }
+  });
+});
+
+// Handle return from payment
+if (window.location.search.includes('payment=success')) {
+  alert('Payment processed! Check your email for confirmation.');
+  fetch(`${webAppUrl}?action=getRemaining`)
+    .then(res => res.json())
+    .then(data => {
+      sharesRemaining = data.remaining;
+      remainingSpan.textContent = data.remaining.toLocaleString();
+      recalc();
+    });
+}
+</script>
+</body>
+</html>
