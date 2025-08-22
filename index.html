@@ -42,7 +42,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>UKMCar Share Reservation</title>
+<title>RideX Share Reservation</title>
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 
 <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -81,8 +81,8 @@ header span{font-size:22px;margin-left:30px;}
 /* section intro */
 .section {
   padding: 90px 20px;
-  opacity: 1; /* Start visible */
-  transform: none; /* No initial transform */
+  opacity: 1;
+  transform: none;
   transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
 .section.show {
@@ -112,11 +112,11 @@ box-shadow:0 20px 45px rgba(0,0,0,0.35);position:relative;}
 
 <section class="hero">
   <div class="heroBox">
-    <h1>UKMCar</h1>
+    <h1>RideX</h1>
     <p>The future of true ride-sharing.</p>
     <p>Own a part of the app and get profits daily based on your shares.</p>
     <p>Fast, reliable, and student-prioritized rides in Malaysia, initialising in Kuala Lumpur & Selangor.</p>
-    <p>Buy a minimum of 30 shares to get free rides for life!</p>
+    <p>Buy a minimum of 1 share to get started!</p>
   </div>
   <div class="scrollHint">⬇</div>
 </section>
@@ -135,13 +135,13 @@ box-shadow:0 20px 45px rgba(0,0,0,0.35);position:relative;}
     <input type="email" id="emailInput" placeholder="Enter your email">
 
     <label>Number of Shares</label>
-    <input type="number" id="numShares" min="30" value="30">
+    <input type="number" id="numShares" min="1" value="1">
 
     <div id="priceBreakdown" style="font-size:14px;margin-bottom:20px;">
       <p>Price per share: RM1.50</p>
-      <p>Subtotal: RM45.00</p>
+      <p>Subtotal: RM1.50</p>
       <p>Online Banking Fee: RM1.00</p>
-      <p><strong>Total Payable: RM46.00</strong></p>
+      <p><strong>Total Payable: RM2.50</strong></p>
     </div>
 
     <div style="font-size:13px;margin-bottom:15px;">
@@ -188,8 +188,8 @@ function animateShares(oldVal, newVal) {
 }
 
 function recalc() {
-  let n = parseInt(numSharesInput.value) || 30;
-  if (n < 30) n = 30;  // Enforce minimum 30 shares
+  let n = parseInt(numSharesInput.value) || 1;
+  if (n < 1) n = 1;  // Enforce minimum 1 share
   if (n > sharesRemaining) n = sharesRemaining;
   numSharesInput.value = n;  // Update input
   const subtotal = (n * pricePerShare).toFixed(2);
@@ -224,8 +224,8 @@ buyBtn.addEventListener('click', () => {
   const name = nameInput.value.trim();
   const email = emailInput.value.trim();
   const shares = parseInt(numSharesInput.value);
-  if (!name || !email || !shares || shares < 30 || !agreeCheck.checked) {
-    alert('Please fill all fields, agree to terms, and ensure at least 30 shares.');
+  if (!name || !email || !shares || shares < 1 || !agreeCheck.checked) {
+    alert('Please fill all fields, agree to terms, and ensure at least 1 share.');
     return;
   }
   buyBtn.disabled = true;
