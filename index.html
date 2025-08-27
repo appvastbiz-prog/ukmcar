@@ -171,9 +171,12 @@ const buyBtn = document.getElementById('buyBtn');
 const agreeCheck = document.getElementById('agreeCheck');
 const nameInput = document.getElementById('nameInput');
 const emailInput = document.getElementById('emailInput');
-const webAppUrl = 'https://script.google.com/macros/s/AKfycbzlfgnbFn0eHyvLfyUuUS3yR_SJJsM6yXwWs1WkULtsCQ2KP_7Vn5BMpTiSAS3xWFA/exec';  // Replace with your deployed Apps Script URL
+const webAppUrl = '[WEB_APP_URL]';  // Replace with your deployed Apps Script URL
 
-agreeCheck.addEventListener('change', e => { buyBtn.disabled = !e.target.checked; });
+agreeCheck.addEventListener('change', e => { 
+  buyBtn.disabled = !e.target.checked; 
+  console.log('Agreement checkbox changed:', e.target.checked);
+});
 
 function animateShares(oldVal, newVal) {
   let cur = oldVal, step = oldVal > newVal ? -1 : 1;
@@ -204,6 +207,7 @@ console.log('Attempting to fetch remaining shares from:', webAppUrl);
 fetch(`${webAppUrl}?action=getRemaining`)
   .then(res => {
     console.log('Fetch response status:', res.status);
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     return res.json();
   })
   .then(data => {
@@ -226,21 +230,24 @@ buyBtn.addEventListener('click', () => {
   const shares = parseInt(numSharesInput.value);
   if (!name || !email || !shares || shares < 1 || !agreeCheck.checked) {
     alert('Please fill all fields, agree to terms, and ensure at least 1 share.');
+    console.log('Form validation failed:', { name, email, shares, agree: agreeCheck.checked });
     return;
   }
   buyBtn.disabled = true;
-  console.log('Sending purchase request:', { name, email, shares });
+  console.log('Sending payment request:', { action: 'createPayment', name, email, shares });
   fetch(webAppUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'createBill', name, email, shares })
+    body: JSON.stringify({ action: 'createPayment', name, email, shares })
   })
     .then(res => {
-      console.log('Purchase response status:', res.status);
+      console.log('Payment response status:', res.status);
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
       return res.json();
     })
     .then(data => {
-      console.log('Purchase response data:', data);
+      console.log('Payment response data:', data);
+      if (data.error) throw new Error(data.error);
       window.location.href = data.paymentUrl;
     })
     .catch(err => {
@@ -271,7 +278,10 @@ if (window.location.search.includes('payment=success')) {
   alert('Payment processed! Check your email for confirmation.');
   console.log('Fetching remaining shares after payment');
   fetch(`${webAppUrl}?action=getRemaining`)
-    .then(res => res.json())
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+      return res.json();
+    })
     .then(data => {
       sharesRemaining = data.remaining;
       remainingSpan.textContent = data.remaining.toLocaleString();
