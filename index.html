@@ -73,21 +73,21 @@ header span{font-size:22px;margin-left:30px;}
  animation:updown 1.5s infinite;
 }
 @keyframes updown {
-  0% { transform: translate(-50%, 0); }
-  50% { transform: translate(-50%, 10px); }
-  100% { transform: translate(-50%, 0); }
+ 0% { transform: translate(-50%, 0); }
+ 50% { transform: translate(-50%, 10px); }
+ 100% { transform: translate(-50%, 0); }
 }
 
 /* section intro */
 .section {
-  padding: 90px 20px;
-  opacity: 1;
-  transform: none;
-  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+ padding: 90px 20px;
+ opacity: 1;
+ transform: none;
+ transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
 .section.show {
-  opacity: 1;
-  transform: none;
+ opacity: 1;
+ transform: none;
 }
 
 /* bubble card */
@@ -111,53 +111,53 @@ box-shadow:0 20px 45px rgba(0,0,0,0.35);position:relative;}
 <header><span>UKMCAR</span></header>
 
 <section class="hero">
-  <div class="heroBox">
-    <h1>UKMCar</h1>
-    <p>The future of true ride-sharing.</p>
-    <p>Own a part of the app and get profits daily based on your shares.</p>
-    <p>Fast, reliable, and student-prioritized rides in Malaysia, initialising in Kuala Lumpur & Selangor.</p>
-    <p>Buy a minimum of 30 shares to get free rides for life!</p>
-  </div>
-  <div class="scrollHint">⬇</div>
+ <div class="heroBox">
+   <h1>UKMCar</h1>
+   <p>The future of true ride-sharing.</p>
+   <p>Own a part of the app and get profits daily based on your shares.</p>
+   <p>Fast, reliable, and student-prioritized rides in Malaysia, initialising in Kuala Lumpur & Selangor.</p>
+   <p>Buy a minimum of 30 shares to get free rides for life!</p>
+ </div>
+ <div class="scrollHint">⬇</div>
 </section>
 
 <section class="section">
-  <div class="bubble">
-    <h2>Reserve Your Shares Now</h2>
-    <p style="text-align:center;margin-bottom:20px;">
-      Remaining Shares: <span id="remainingShares">1,000,000</span>
-    </p>
+ <div class="bubble">
+   <h2>Reserve Your Shares Now</h2>
+   <p style="text-align:center;margin-bottom:20px;">
+     Remaining Shares: <span id="remainingShares">1,000,000</span>
+   </p>
 
-    <label>Full Name</label>
-    <input type="text" id="nameInput" placeholder="Enter your full name">
+   <label>Full Name</label>
+   <input type="text" id="nameInput" placeholder="Enter your full name">
 
-    <label>Email</label>
-    <input type="email" id="emailInput" placeholder="Enter your email">
+   <label>Email</label>
+   <input type="email" id="emailInput" placeholder="Enter your email">
 
-    <label>Number of Shares</label>
-    <input type="number" id="numShares" min="1" value="1">
+   <label>Number of Shares</label>
+   <input type="number" id="numShares" min="1" value="1">
 
-    <div id="priceBreakdown" style="font-size:14px;margin-bottom:20px;">
-      <p>Price per share: RM1.50</p>
-      <p>Subtotal: RM1.50</p>
-      <p>Online Banking Fee: RM1.00</p>
-      <p><strong>Total Payable: RM2.50</strong></p>
-    </div>
+   <div id="priceBreakdown" style="font-size:14px;margin-bottom:20px;">
+     <p>Price per share: RM1.50</p>
+     <p>Subtotal: RM1.50</p>
+     <p>Online Banking Fee: RM1.00</p>
+     <p><strong>Total Payable: RM2.50</strong></p>
+   </div>
 
-    <div style="font-size:13px;margin-bottom:15px;">
-      <input type="checkbox" id="agreeCheck"> I agree to <a href="agreement.pdf" target="_blank">Agreement</a>, <a href="foolproof.pdf" target="_blank">Foolproof Plan</a>, <a href="budget.pdf" target="_blank">Budget Plan</a>
-    </div>
-    <button id="buyBtn" disabled>Buy Now</button>
-  </div>
+   <div style="font-size:13px;margin-bottom:15px;">
+     <input type="checkbox" id="agreeCheck"> I agree to <a href="agreement.pdf" target="_blank">Agreement</a>, <a href="foolproof.pdf" target="_blank">Foolproof Plan</a>, <a href="budget.pdf" target="_blank">Budget Plan</a>
+   </div>
+   <button id="buyBtn" disabled>Buy Now</button>
+ </div>
 </section>
 
 <div class="footer">
-  <p>APPVAST SERVICES</p>
-  <a href="#">Forum</a>
-  <a href="#">Telegram</a>
-  <a href="#">Discord</a>
-  <a href="#">Twitter</a>
-  <a href="#">Instagram</a>
+ <p>APPVAST SERVICES</p>
+ <a href="#">Forum</a>
+ <a href="#">Telegram</a>
+ <a href="#">Discord</a>
+ <a href="#">Twitter</a>
+ <a href="#">Instagram</a>
 </div>
 
 <script>
@@ -171,7 +171,7 @@ const buyBtn = document.getElementById('buyBtn');
 const agreeCheck = document.getElementById('agreeCheck');
 const nameInput = document.getElementById('nameInput');
 const emailInput = document.getElementById('emailInput');
-const webAppUrl = '[WEB_APP_URL]';  // Replace with your deployed Apps Script URL
+const webAppUrl = ' https://script.google.com/macros/s/AKfycbzlfgnbFn0eHyvLfyUuUS3yR_SJJsM6yXwWs1WkULtsCQ2KP_7Vn5BMpTiSAS3xWFA/exec';  // Replace with your deployed Apps Script URL
 
 agreeCheck.addEventListener('change', e => { 
   buyBtn.disabled = !e.target.checked; 
@@ -204,7 +204,10 @@ numSharesInput.addEventListener('input', recalc);
 
 // Fetch remaining shares on load
 console.log('Attempting to fetch remaining shares from:', webAppUrl);
-fetch(`${webAppUrl}?action=getRemaining`)
+fetch(`${webAppUrl}?action=getRemaining`, {
+  method: 'GET',
+  headers: { 'Content-Type': 'application/json' }
+})
   .then(res => {
     console.log('Fetch response status:', res.status);
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
@@ -212,6 +215,7 @@ fetch(`${webAppUrl}?action=getRemaining`)
   })
   .then(data => {
     console.log('Fetch data:', data);
+    if (data.error) throw new Error(data.error);
     sharesRemaining = data.remaining;
     remainingSpan.textContent = data.remaining.toLocaleString();
     recalc();
@@ -277,12 +281,16 @@ window.addEventListener('load', () => {
 if (window.location.search.includes('payment=success')) {
   alert('Payment processed! Check your email for confirmation.');
   console.log('Fetching remaining shares after payment');
-  fetch(`${webAppUrl}?action=getRemaining`)
+  fetch(`${webAppUrl}?action=getRemaining`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' }
+  })
     .then(res => {
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
       return res.json();
     })
     .then(data => {
+      if (data.error) throw new Error(data.error);
       sharesRemaining = data.remaining;
       remainingSpan.textContent = data.remaining.toLocaleString();
       recalc();
