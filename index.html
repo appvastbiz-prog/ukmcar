@@ -138,10 +138,8 @@ box-shadow:0 20px 45px rgba(0,0,0,0.35);position:relative;}
    <input type="number" id="numShares" min="1" value="1">
 
    <div id="priceBreakdown" style="font-size:14px;margin-bottom:20px;">
-     <p>Price per share: RM1.50</p>
-     <p>Subtotal: RM1.50</p>
-     <p>Online Banking Fee: RM1.00</p>
-     <p><strong>Total Payable: RM2.50</strong></p>
+     <p>Price per share: RM2.00</p>
+     <p><strong>Total Payable: RM2.00</strong></p>
    </div>
 
    <div style="font-size:13px;margin-bottom:15px;">
@@ -161,8 +159,8 @@ box-shadow:0 20px 45px rgba(0,0,0,0.35);position:relative;}
 </div>
 
 <script>
-const pricePerShare = 1.50;
-const onlineBankingFee = 1.00;
+const pricePerShare = 2.00;
+const onlineBankingFee = 0.00;
 let sharesRemaining = 1000000;  // Initial fallback
 const numSharesInput = document.getElementById('numShares');
 const priceBreakdown = document.getElementById('priceBreakdown');
@@ -171,7 +169,8 @@ const buyBtn = document.getElementById('buyBtn');
 const agreeCheck = document.getElementById('agreeCheck');
 const nameInput = document.getElementById('nameInput');
 const emailInput = document.getElementById('emailInput');
-const webAppUrl = 'https://script.google.com/macros/s/AKfycbzlfgnbFn0eHyvLfyUuUS3yR_SJJsM6yXwWs1WkULtsCQ2KP_7Vn5BMpTiSAS3xWFA/exec';  // Replace with your deployed Apps Script URL
+const webAppUrl = 'https://script.google.com/macros/s/AKfycbzlfgnbFn0eHyvLfyUuUS3yR_SJJsM6yXwWs1WkULtsCQ2KP_7Vn5BMpTiSAS3xWFA/exec';  // Replace with your Apps Script Web app URL, e.g., 'https://script.google.com/macros/s/AKfycbz1234567890/exec'
+const stripePaymentLink = 'https://buy.stripe.com/9B6fZg9qKgG62QjdF5aR200'; // Replace with your Stripe Payment Link, e.g., 'https://buy.stripe.com/abc123'
 
 agreeCheck.addEventListener('change', e => { 
   buyBtn.disabled = !e.target.checked; 
@@ -195,9 +194,8 @@ function recalc() {
   if (n < 1) n = 1;  // Enforce minimum 1 share
   if (n > sharesRemaining) n = sharesRemaining;
   numSharesInput.value = n;  // Update input
-  const subtotal = (n * pricePerShare).toFixed(2);
-  const total = (parseFloat(subtotal) + onlineBankingFee).toFixed(2);
-  priceBreakdown.innerHTML = `<p>Price per share: RM${pricePerShare.toFixed(2)}</p><p>Subtotal: RM${subtotal}</p><p>Online Banking Fee: RM${onlineBankingFee.toFixed(2)}</p><p><strong>Total Payable: RM${total}</strong></p>`;
+  const total = (n * pricePerShare).toFixed(2);
+  priceBreakdown.innerHTML = `<p>Price per share: RM${pricePerShare.toFixed(2)}</p><p><strong>Total Payable: RM${total}</strong></p>`;
 }
 
 numSharesInput.addEventListener('input', recalc);
@@ -238,24 +236,27 @@ buyBtn.addEventListener('click', () => {
     return;
   }
   buyBtn.disabled = true;
-  console.log('Sending payment request:', { action: 'createPayment', name, email, shares });
+  console.log('Logging purchase:', { action: 'logPurchase', name, email, shares });
   fetch(webAppUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'createPayment', name, email, shares })
+    body: JSON.stringify({ action: 'logPurchase', name, email, shares })
   })
     .then(res => {
-      console.log('Payment response status:', res.status);
+      console.log('Log purchase response status:', res.status);
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
       return res.json();
     })
     .then(data => {
-      console.log('Payment response data:', data);
+      console.log('Log purchase response data:', data);
       if (data.error) throw new Error(data.error);
-      window.location.href = data.paymentUrl;
+      // Redirect to Stripe Payment Link with query parameters
+      const paymentUrl = `${stripePaymentLink}?client_reference_id=${Date.now()}&prefilled_email=${encodeURIComponent(email)}&quantity=${shares}&metadata[shares]=${shares}`;
+      console.log('Redirecting to Stripe Payment Link:', paymentUrl);
+      window.location.href = paymentUrl;
     })
     .catch(err => {
-      console.error('Error initiating payment:', err);
+      console.error('Error logging purchase:', err);
       alert('Error initiating payment. Try again.');
       buyBtn.disabled = false;
     });
