@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>UKMCar - Thank You</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body,html{height:100%;font-family:'Inter',sans-serif;overflow-x:hidden;}
+video.bgvid{position:fixed;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:-2;}
+body::before{content:"";position:fixed;top:0;left:0;width:100%;height:100%;background:#450000aa;z-index:-1;}
+
+header{position:fixed;top:0;left:0;width:100%;padding:20px;color:#fff;font-weight:700;z-index:10;}
+header span{font-size:22px;margin-left:30px;}
+
+.hero{height:100vh;display:flex;justify-content:center;align-items:center;text-align:center;position:relative;}
+.heroBox{background:#ffffffc2;padding:50px 40px;border-radius:20px;max-width:700px;margin:auto;}
+.heroBox h1{font-size:48px;color:#c8102e;margin-bottom:20px;}
+.heroBox p{font-size:20px;color:#333;margin-bottom:15px;}
+
+/* scroll arrow */
+.scrollHint{
+ position:absolute;
+ bottom:25px;
+ left:50%;
+ transform:translateX(-50%);
+ font-size:30px;
+ color:#fff;
+ animation:updown 1.5s infinite;
+}
+@keyframes updown {
+ 0% { transform: translate(-50%, 0); }
+ 50% { transform: translate(-50%, 10px); }
+ 100% { transform: translate(-50%, 0); }
+}
+
+/* section intro */
+.section {
+ padding: 90px 20px;
+ opacity: 1;
+ transform: none;
+ transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.section.show {
+ opacity: 1;
+ transform: none;
+}
+
+/* bubble card */
+.bubble{background:#fff;border-radius:30px;padding:40px;margin:auto;max-width:400px;
+box-shadow:0 20px 45px rgba(0,0,0,0.35);position:relative;}
+.bubble h2{color:#c8102e;text-align:center;margin-bottom:20px;}
+.bubble button{width:100%;padding:14px;background:#c8102e;color:#fff;border-radius:12px;font-size:1.1em;border:none;cursor:pointer;transition:.3s;}
+.bubble button:hover:not(:disabled){background:#a10b24;}
+.bubble button:disabled{background:#888;cursor:not-allowed;}
+#remainingShares{color:#c8102e;font-weight:700;}
+
+.footer{color:#fff;margin:100px 0 40px;text-align:center;}
+.footer a{margin:0 10px;color:#fff;text-decoration:none;font-weight:300;}
+</style>
+</head>
+<body>
+
+<video autoplay muted loop class="bgvid"><source src="video.mp4" type="video/mp4"></video>
+
+<header><span>UKMCAR</span></header>
+
+<section class="hero">
+ <div class="heroBox">
+   <h1>Thank You!</h1>
+   <p>Thank you for your purchase.</p>
+   <p>We'll contact you soon via email.</p>
+ </div>
+</section>
+
+<div class="footer">
+ <p>APPVAST SERVICES</p>
+ <a href="#">Forum</a>
+ <a href="#">Telegram</a>
+ <a href="#">Discord</a>
+ <a href="#">Twitter</a>
+ <a href="#">Instagram</a>
+</div>
+
+<script>
+// Handle section visibility on scroll
+const secs = document.querySelectorAll('.section');
+function checkScroll() {
+  secs.forEach(s => {
+    const rect = s.getBoundingClientRect();
+    if (rect.top <= window.innerHeight && rect.bottom >= 0) {
+      s.classList.add('show');
+    }
+  });
+}
+window.addEventListener('scroll', checkScroll);
+window.addEventListener('load', () => {
+  checkScroll();
+});
+</script>
+</body>
+</html>
