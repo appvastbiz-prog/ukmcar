@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>UKMCar - Project Information Memorandum</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body,html{height:100%;font-family:'Inter',sans-serif;overflow-x:hidden;}
+video.bgvid{position:fixed;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:-2;}
+body::before{content:"";position:fixed;top:0;left:0;width:100%;height:100%;background:#450000aa;z-index:-1;}
+
+header{position:fixed;top:0;left:0;width:100%;padding:20px;color:#fff;font-weight:700;z-index:10;}
+header span{font-size:22px;margin-left:30px;}
+
+.hero{height:100vh;display:flex;justify-content:center;align-items:center;text-align:center;position:relative;}
+.heroBox{background:#ffffffc2;padding:50px 40px;border-radius:20px;max-width:700px;margin:auto;}
+.heroBox h1{font-size:48px;color:#c8102e;margin-bottom:20px;}
+.heroBox p{font-size:20px;color:#333;margin-bottom:15px;}
+.heroBox ol{text-align:left;margin:20px 0;padding-left:40px;}
+.heroBox ol li{font-size:18px;color:#333;margin-bottom:10px;}
+.heroBox a{color:#c8102e;text-decoration:none;}
+.heroBox a:hover{text-decoration:underline;}
+
+/* scroll arrow */
+.scrollHint{
+ position:absolute;
+ bottom:25px;
+ left:50%;
+ transform:translateX(-50%);
+ font-size:30px;
+ color:#fff;
+ animation:updown 1.5s infinite;
+}
+@keyframes updown {
+ 0% { transform: translate(-50%, 0); }
+ 50% { transform: translate(-50%, 10px); }
+ 100% { transform: translate(-50%, 0); }
+}
+
+/* section intro */
+.section {
+ padding: 90px 20px;
+ opacity: 1;
+ transform: none;
+ transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.section.show {
+ opacity: 1;
+ transform: none;
+}
+
+.footer{color:#fff;margin:100px 0 40px;text-align:center;}
+.footer a{margin:0 10px;color:#fff;text-decoration:none;font-weight:300;}
+</style>
+</head>
+<body>
+
+<video autoplay muted loop class="bgvid"><source src="video.mp4" type="video/mp4"></video>
+
+<header><span>UKMCAR</span></header>
+
+<section class="hero">
+ <div class="heroBox">
+   <h1>Project Information Memorandum</h1>
+   <p>Please review the following documents for detailed information about the UKMCar investment opportunity:</p>
+   <ol>
+     <li><a href="agreement.pdf" target="_blank">COMPUTER-GENERATED CONDITIONAL SHARE PURCHASE AGREEMENT (CSPA)</a></li>
+     <li><a href="budget.pdf" target="_blank">BUDGET PLAN</a></li>
+     <li><a href="foolproof.pdf" target="_blank">FOOLPROOF PLAN</a></li>
+     <li><a href="risk.pdf" target="_blank">RISK FACTORS</a></li>
+     <li><a href="financial.pdf" target="_blank">FINANCIAL PROJECTIONS</a></li>
+     <li><a href="cooperative.pdf" target="_blank">COOPERATIVE FORMATION DETAILS</a></li>
+     <li><a href="business-plan.pdf" target="_blank">BUSINESS PLAN</a></li>
+   </ol>
+ </div>
+ <div class="scrollHint">⬇</div>
+</section>
+
+<div class="footer">
+ <p>APPVAST SERVICES</p>
+ <a href="https://www.facebook.com/groups/ukmcar">Forum</a>
+ <a href="https://t.me/ukmcar">Telegram</a>
+ <a href="https://discord.gg/f7vBjuwT7a">Discord</a>
+ <a href="https://x.com/ukmcar">Twitter</a>
+ <a href="https://instagram.com/ukmcar">Instagram</a>
+</div>
+
+<script>
+// Handle section visibility on scroll
+const secs = document.querySelectorAll('.section');
+function checkScroll() {
+  secs.forEach(s => {
+    const rect = s.getBoundingClientRect();
+    if (rect.top <= window.innerHeight && rect.bottom >= 0) {
+      s.classList.add('show');
+    }
+  });
+}
+window.addEventListener('scroll', checkScroll);
+window.addEventListener('load', () => {
+  checkScroll();
+});
+</script>
+</body>
+</html>
